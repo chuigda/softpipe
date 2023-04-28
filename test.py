@@ -2,6 +2,7 @@ from matplotlib import pyplot as plt
 import time
 
 from data import Vec, Color
+from matrix import rotate_y, translate, perspective
 from softpipe import softpipe_render
 
 
@@ -17,8 +18,11 @@ def framebuffer2pil(framebuffer, width, height):
     return image
 
 
-def vs(inputs, _):
-    return inputs
+def vs(inputs, uniform):
+    return {
+        'v_position': (uniform['projection'] * uniform['modelview']).mul_vec(inputs['v_position'].pad_to_4d()),
+        'color': inputs['color']
+    }
 
 
 def fs(inputs, _):
@@ -26,6 +30,13 @@ def fs(inputs, _):
 
 
 if __name__ == '__main__':
+    uniform = {
+        'projection': perspective(90.0 / 180.0 * 3.1415926, 1.0, 0.1, 100.0),
+        'modelview': translate(0.0, 0.0, -3.0),
+    }
+
+    print(uniform['modelview'])
+
     start = time.time()
     framebuffer = softpipe_render(
         (600, 600),
@@ -39,7 +50,8 @@ if __name__ == '__main__':
             { 'v_position': Vec(1.0, -1.0, 0.0), 'color': Color(0.0, 0.0, 1.0, 1.0) }
         ],
         vs,
-        fs
+        fs,
+        uniform=uniform
     )
     end = time.time()
     print('softpipe_render took %.3f seconds' % (end - start))

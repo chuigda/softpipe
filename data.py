@@ -72,6 +72,18 @@ class Vec:
     def set_a(self, value):
         self._t = value
 
+    def __getitem__(self, key):
+        if key == 0:
+            return self._x
+        elif key == 1:
+            return self._y
+        elif key == 2:
+            return self._z
+        elif key == 3:
+            return self._t
+        else:
+            raise IndexError("Index out of bounds")
+
     def sum(self):
         return self._x \
             + self._y \
@@ -123,6 +135,9 @@ class Vec:
             self._z * other._x - self._x * other._z,
             self._x * other._y - self._y * other._x
         )
+    
+    def pad_to_4d(self, value=1.0):
+        return Vec(self._x, self._y, self._z if self._z else 0.0, value)
 
 
 Color = Vec

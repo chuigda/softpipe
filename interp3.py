@@ -1,11 +1,12 @@
 # https://codeplea.com/triangular-interpolation
-from functools import reduce
-
 from data import *
 
 
 def __barycentric(v1, v2, v3, v):
     denom = (v2.y - v3.y) * (v1.x - v3.x) + (v3.x - v2.x) * (v1.y - v3.y)
+    if denom == 0:
+        return -1, -1, -1
+
     w1 = ((v2.y - v3.y) * (v.x - v3.x) + (v3.x - v2.x) * (v.y - v3.y)) / denom
     w2 = ((v3.y - v1.y) * (v.x - v3.x) + (v1.x - v3.x) * (v.y - v3.y)) / denom
     w3 = 1.0 - w1 - w2

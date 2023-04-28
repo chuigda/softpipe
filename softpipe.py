@@ -8,7 +8,7 @@ class FrameBuffer:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.buffer = [Color(0.0, 0.0, 0.0, 0.0) for _ in range(width * height)]
+        self.buffer = [Vec(0.0, 0.0, 0.0, 0.0)] * (width * height)
 
     def put_pixel(self, x, y, pixel, blend_func):
         assert x < self.width and y < self.height
@@ -24,7 +24,7 @@ class DepthBuffer:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.buffer = [-float_info.min for _ in range(width * height)]
+        self.buffer = [-1.0] * (width * height)
 
     def depth_test(self, x, y, depth):
         assert x < self.width and y < self.height
@@ -73,6 +73,10 @@ def softpipe_render(viewport,
 
                 output = interp3(output1, output2, output3, Vec(x_norm, y_norm), user_interp)
                 if output is None:
+                    continue
+
+                z = output['v_position'].z
+                if z > 1.0:
                     continue
 
                 if depth_buffer is not None:
