@@ -2,7 +2,8 @@ from matplotlib import pyplot as plt
 import time
 
 from data import Vec, Color
-from matrix import rotate_y, translate, perspective
+from matrix import rotate_x, rotate_y, translate, perspective
+from deg2rad import deg2rad
 from softpipe import softpipe_render
 
 
@@ -31,11 +32,9 @@ def fs(inputs, _):
 
 if __name__ == '__main__':
     uniform = {
-        'projection': perspective(90.0 / 180.0 * 3.1415926, 1.0, 0.1, 100.0),
-        'modelview': translate(0.0, 0.0, -3.0),
+        'projection': perspective(deg2rad(45.0), 1.0, 0.1, 200.0),
+        'modelview': translate(0.0, 0.0, 0.0) * rotate_x(deg2rad(45.0)) * rotate_y(deg2rad(45.0))
     }
-
-    print(uniform['modelview'])
 
     start = time.time()
     framebuffer = softpipe_render(
