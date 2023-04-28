@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 import time
 
-from data import Vec3, Color
+from data import Vec, Color
 from softpipe import softpipe_render
 
 
@@ -30,13 +30,13 @@ if __name__ == '__main__':
     framebuffer = softpipe_render(
         (600, 600),
         [
-            { 'v_position': Vec3(1.0, 0.0, 0.1), 'color': Color(0.0, 0.0, 1.0, 1.0) },
-            { 'v_position': Vec3(0.0, -1.0, 0.1), 'color': Color(1.0, 0.0, 0.0, 1.0) },
-            { 'v_position': Vec3(1.0, -1.0, 0.1), 'color': Color(0.0, 1.0, 0.0, 1.0) },
+            { 'v_position': Vec(1.0, 0.0, 0.1), 'color': Color(0.0, 0.0, 1.0, 1.0) },
+            { 'v_position': Vec(0.0, -1.0, 0.1), 'color': Color(1.0, 0.0, 0.0, 1.0) },
+            { 'v_position': Vec(1.0, -1.0, 0.1), 'color': Color(0.0, 1.0, 0.0, 1.0) },
 
-            { 'v_position': Vec3(0.0, 1.0, 0.0), 'color': Color(1.0, 0.0, 0.0, 1.0) },
-            { 'v_position': Vec3(-1.0, -1.0, 0.0), 'color': Color(0.0, 1.0, 0.0, 1.0) },
-            { 'v_position': Vec3(1.0, -1.0, 0.0), 'color': Color(0.0, 0.0, 1.0, 1.0) }
+            { 'v_position': Vec(0.0, 1.0, 0.0), 'color': Color(1.0, 0.0, 0.0, 1.0) },
+            { 'v_position': Vec(-1.0, -1.0, 0.0), 'color': Color(0.0, 1.0, 0.0, 1.0) },
+            { 'v_position': Vec(1.0, -1.0, 0.0), 'color': Color(0.0, 0.0, 1.0, 1.0) }
         ],
         vs,
         fs

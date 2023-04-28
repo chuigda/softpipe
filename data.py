@@ -1,78 +1,128 @@
-from collections import namedtuple
 from math import sqrt
 
 
-Vec2 = namedtuple('Vec2', ('x', 'y'))
-Vec3 = namedtuple('Vec3', ('x', 'y', 'z'))
-Vec4 = namedtuple('Vec4', ('x', 'y', 'z', 't'))
-Color = namedtuple('Color', ('r', 'g', 'b', 'a'))
+class Vec:
+    def __init__(self, x, y, *varargsin):
+        self._x = x
+        self._y = y
+        self._z = varargsin[0] if len(varargsin) >= 1 else None
+        self._t = varargsin[1] if len(varargsin) >= 2 else None
+
+    @property
+    def x(self):
+        return self._x
+    
+    @property
+    def y(self):
+        return self._y
+    
+    @property
+    def z(self):
+        return self._z
+    
+    @property
+    def t(self):
+        return self._t
+    
+    @property
+    def r(self):
+        return self._x
+    
+    @property
+    def g(self):
+        return self._y
+    
+    @property
+    def b(self):
+        return self._z
+    
+    @property
+    def a(self):
+        return self._t
+    
+    @x.setter
+    def set_x(self, value):
+        self._x = value
+
+    @y.setter
+    def set_y(self, value):
+        self._y = value
+    
+    @z.setter
+    def set_z(self, value):
+        self._z = value
+    
+    @t.setter
+    def set_t(self, value):
+        self._t = value
+    
+    @r.setter
+    def set_r(self, value):
+        self._x = value
+    
+    @g.setter
+    def set_g(self, value):
+        self._y = value
+    
+    @b.setter
+    def set_b(self, value):
+        self._z = value
+    
+    @a.setter
+    def set_a(self, value):
+        self._t = value
+
+    def sum(self):
+        return self._x \
+            + self._y \
+            + (self._z if self._z is not None else 0.0) \
+            + (self._t if self._t is not None else 0.0)
+
+    def __str__(self):
+        return "Vec({}, {}, {}, {})".format(self._x, self._y, self._z, self._t)
+    
+    def __add__(self, other):
+        return Vec(
+            self._x + other._x,
+            self._y + other._y,
+            self._z + other._z if self._z is not None and other._z is not None else None,
+            self._t + other._t if self._t is not None and other._t is not None else None
+        )
+    
+    def __sub__(self, other):
+        return Vec(
+            self._x - other._x,
+            self._y - other._y,
+            self._z - other._z if self._z is not None and other._z is not None else None,
+            self._t - other._t if self._t is not None and other._t is not None else None
+        )
+
+    def __mul__(self, other):
+        return Vec(
+            self._x * other._x,
+            self._y * other._y,
+            self._z * other._z if self._z is not None and other._z is not None else None,
+            self._t * other._t if self._t is not None and other._t is not None else None
+        )
+    
+    def num_mul(self, other):
+        return Vec(
+            self._x * other,
+            self._y * other,
+            self._z * other if self._z is not None else None,
+            self._t * other if self._t is not None else None
+        )
+
+    def dot(self, other):
+        return (self * other).sum()
+    
+    def cross(self, other):
+        assert self._z is not None and other._z is not None, "Cross product is only defined for 3D vectors"
+        return Vec(
+            self._y * other._z - self._z * other._y,
+            self._z * other._x - self._x * other._z,
+            self._x * other._y - self._y * other._x
+        )
 
 
-def __square(x):
-    return x * x
-
-
-def distance_vec2(v1, v2):
-    return sqrt(__square(v2.x - v1.x) + __square(v2.y - v1.y))
-
-
-def __apply_elemwise(v, f):
-    if isinstance(v, Vec2):
-        return Vec2(f(v.x), f(v.y))
-    elif isinstance(v, Vec3):
-        return Vec3(f(v.x), f(v.y), f(v.z))
-    elif isinstance(v, Vec4):
-        return Vec4(f(v.x), f(v.y), f(v.z), f(v.t))
-    elif isinstance(v, Color):
-        return Color(f(v.r), f(v.g), f(v.b), f(v.a))
-    else:
-        assert False
-
-
-def __apply_elemwise2(v1, v2, f):
-    assert v1.__class__ == v2.__class__
-    if isinstance(v1, Vec2):
-        return Vec2(f(v1.x, v2.x), f(v1.y, v2.y))
-    elif isinstance(v1, Vec3):
-        return Vec3(f(v1.x, v2.x), f(v1.y, v2.y), f(v1.z, v2.z))
-    elif isinstance(v1, Vec4):
-        return Vec4(f(v1.x, v2.x), f(v1.y, v2.y), f(v1.z, v2.z), f(v1.t, v2.t))
-    elif isinstance(v1, Color):
-        return Color(f(v1.r, v2.r), f(v1.g, v2.g), f(v1.b, v2.b), f(v1.a, v2.a))
-    else:
-        assert False
-
-
-def vec_add(v1, v2):
-    return __apply_elemwise2(v1, v2, lambda x, y: x + y)
-
-
-def vec_sub(v1, v2):
-    return __apply_elemwise2(v1, v2, lambda x, y: x - y)
-
-
-def vec_mul(v1, v2):
-    return __apply_elemwise2(v1, v2, lambda x, y: x * y)
-
-
-def num_mul_vec(num, v):
-    return __apply_elemwise(v, lambda x: x * num)
-
-
-def vec_dot(v1, v2):
-    v = vec_mul(v1, v2)
-    if isinstance(v, Vec2):
-        return v.x + v.y
-    elif isinstance(v, Vec3):
-        return v.x + v.y + v.z
-    elif isinstance(v, Vec4):
-        return v.x + v.y + v.z + v.t
-
-
-def vec_cross(v1, v2):
-    assert isinstance(v1, Vec3) and isinstance(v2, Vec3)
-    return Vec3(
-        v1.y * v2.z - v2.y * v1.z,
-        v1.x * v2.z - v2.x * v1.z,
-        v1.x * v2.y - v2.x * v1.y
-    )
+Color = Vec

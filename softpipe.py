@@ -42,6 +42,7 @@ def softpipe_render(viewport,
                     vs,
                     fs,
                     uniform=None,
+                    user_interp=None,
                     depth_test=True,
                     blend_func=None):
     width, height = viewport
@@ -70,7 +71,7 @@ def softpipe_render(viewport,
             for x in range(0, width):
                 x_norm = (x - half_width) / half_width
 
-                output = interp3(output1, output2, output3, Vec2(x_norm, y_norm))
+                output = interp3(output1, output2, output3, Vec(x_norm, y_norm), user_interp)
                 if output is None:
                     continue
 
