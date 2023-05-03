@@ -51,7 +51,8 @@ if __name__ == '__main__':
         ],
         vs,
         fs,
-        uniform=uniform
+        uniform=uniform,
+        clear_color=Vec(0.0, 0.0, 0.0, 1.0)
     )
     end = time.time()
     print('softpipe_render took %.3f seconds' % (end - start))

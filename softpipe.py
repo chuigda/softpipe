@@ -6,10 +6,10 @@ from interp3 import interp3
 
 
 class FrameBuffer:
-    def __init__(self, width, height):
+    def __init__(self, width, height, clear_color):
         self.width = width
         self.height = height
-        self.buffer = [Vec(0.0, 0.0, 0.0, 0.0)] * (width * height)
+        self.buffer = [clear_color] * (width * height)
 
     def put_pixel(self, x, y, pixel, blend_func):
         assert x < self.width and y < self.height
@@ -45,14 +45,15 @@ def softpipe_render(viewport,
                     uniform=None,
                     user_interp=None,
                     depth_test=True,
-                    blend_func=None):
+                    blend_func=None,
+                    clear_color=None):
     width, height = viewport
 
     assert len(points) % 3 == 0
     assert width > 0
     assert height > 0
 
-    frame_buffer = FrameBuffer(width, height)
+    frame_buffer = FrameBuffer(width, height, clear_color)
     if depth_test:
         depth_buffer = DepthBuffer(width, height)
     else:
