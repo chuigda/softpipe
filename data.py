@@ -139,5 +139,8 @@ class Vec:
     def pad_to_4d(self, value=1.0):
         return Vec(self._x, self._y, self._z if self._z else 0.0, value)
 
+    def set_4d_to_1(self):
+        coeff = self._t
+        return Vec(self._x / coeff, self._y / coeff, self._z / coeff, 1.0)
 
 Color = Vec

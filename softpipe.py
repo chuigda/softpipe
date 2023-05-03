@@ -58,6 +58,9 @@ def softpipe_render(viewport,
         depth_buffer = None
 
     vs_outputs = [vs(point, uniform) for point in points]
+    for vs_output in vs_outputs:
+        vs_output['v_position'] = vs_output['v_position'].set_4d_to_1()
+
     half_width = width / 2.0
     half_height = height / 2.0
 

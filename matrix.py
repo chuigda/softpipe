@@ -4,8 +4,11 @@ from data import Vec
 
 
 class Matrix:
-    def __init__(self, buffer=[[0.0 for _ in range(4)] for _ in range(4)]):
-        self._buffer = buffer
+    def __init__(self, buffer=None):
+        if buffer is not None:
+            self._buffer = buffer
+        else:
+            self._buffer = [[0.0 for _ in range(4)] for _ in range(4)]
 
     def __getitem__(self, index):
         return self._buffer[index]
