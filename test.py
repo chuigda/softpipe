@@ -21,7 +21,8 @@ def framebuffer2pil(framebuffer, width, height):
 
 def vs(inputs, uniform):
     return {
-        'v_position': (uniform['projection'] * uniform['modelview']).mul_vec(inputs['v_position'].pad_to_4d()),
+        'v_position': (uniform['projection'] * uniform['modelview'])
+            .mul_vec(inputs['v_position'].pad_to_4d()),
         'color': inputs['color']
     }
 

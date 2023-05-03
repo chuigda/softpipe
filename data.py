@@ -129,7 +129,8 @@ class Vec:
         return (self * other).sum()
     
     def cross(self, other):
-        assert self._z is not None and other._z is not None, "Cross product is only defined for 3D vectors"
+        assert self._z is not None and other._z is not None, \
+            'cross product is only defined for 3D vectors'
         return Vec(
             self._y * other._z - self._z * other._y,
             self._z * other._x - self._x * other._z,
@@ -140,7 +141,7 @@ class Vec:
         return Vec(self._x, self._y, self._z if self._z else 0.0, value)
 
     def set_4d_to_1(self):
-        assert self._z is not None
+        assert self._z is not None and self._t is not None
 
         coeff = self._t
         return Vec(self._x / coeff, self._y / coeff, self._z / coeff, 1.0)
