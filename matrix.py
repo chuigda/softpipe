@@ -12,7 +12,7 @@ class Matrix:
 
     def __getitem__(self, index):
         return self._buffer[index]
-    
+
     def __setitem__(self, index, value):
         self._buffer[index] = value
 
@@ -32,7 +32,7 @@ class Matrix:
             for j in range(4):
                 result[i][j] = self[i][j] * other
         return result
-    
+
     def mul_vec(self, other):
         result = []
         for i in range(4):
