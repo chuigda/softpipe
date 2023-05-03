@@ -1,4 +1,5 @@
 from sys import float_info
+from math import floor, ceil
 
 from data import *
 from interp3 import interp3
@@ -69,9 +70,25 @@ def softpipe_render(viewport,
         output2 = vs_outputs[i + 1]
         output3 = vs_outputs[i + 2]
 
-        for y in range(0, height):
+        position0 = output1['v_position']
+        position1 = output2['v_position']
+        position2 = output3['v_position']
+
+        x_min = min([position0.x, position1.x, position2.x])
+        x_max = max([position0.x, position1.x, position2.x])
+        y_min = min([position0.y, position1.y, position2.y])
+        y_max = max([position0.y, position1.y, position2.y])
+
+        x_min_pix = floor(x_min * width + half_width)
+        x_max_pix = ceil(x_max * width + half_width)
+        y_min_pix = floor((y_min + 1.0) * half_height)
+        y_max_pix = ceil((y_max + 1.0) * half_height)
+
+        for y in range(y_min_pix if y_min_pix > 0 else 0, \
+                       y_max_pix if y_max_pix < height else height):
             y_norm = (y - half_height) / half_height
-            for x in range(0, width):
+            for x in range(x_min_pix if x_min_pix > 0 else 0, \
+                           x_max_pix if x_max_pix < width else width):
                 x_norm = (x - half_width) / half_width
 
                 output = interp3(output1, output2, output3, Vec(x_norm, y_norm), user_interp)
