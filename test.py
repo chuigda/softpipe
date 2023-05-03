@@ -32,7 +32,7 @@ def fs(inputs, _):
 
 if __name__ == '__main__':
     uniform = {
-        'projection': perspective(deg2rad(45.0), 1.0, -0.1, 100.0),
+        'projection': perspective(deg2rad(45.0), 1.0, 0.1, 100.0),
         'modelview': translate(0.0, 0.0, -4.0) * rotate_y(deg2rad(30.0))
     }
 
@@ -40,9 +40,9 @@ if __name__ == '__main__':
     framebuffer = softpipe_render(
         (600, 600),
         [
-            { 'v_position': Vec(1.0, 0.0, 0.1), 'color': Color(0.0, 0.0, 1.0, 1.0) },
-            { 'v_position': Vec(0.0, -1.0, 0.1), 'color': Color(1.0, 0.0, 0.0, 1.0) },
-            { 'v_position': Vec(1.0, -1.0, 0.1), 'color': Color(0.0, 1.0, 0.0, 1.0) },
+            { 'v_position': Vec(1.0, 0.0, 0.01), 'color': Color(0.0, 0.0, 1.0, 1.0) },
+            { 'v_position': Vec(0.0, -1.0, 0.01), 'color': Color(1.0, 0.0, 0.0, 1.0) },
+            { 'v_position': Vec(1.0, -1.0, 0.01), 'color': Color(0.0, 1.0, 0.0, 1.0) },
 
             { 'v_position': Vec(0.0, 1.0, 0.0), 'color': Color(1.0, 0.0, 0.0, 1.0) },
             { 'v_position': Vec(-1.0, -1.0, 0.0), 'color': Color(0.0, 1.0, 0.0, 1.0) },

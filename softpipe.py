@@ -24,13 +24,13 @@ class DepthBuffer:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.buffer = [-float_info.max] * (width * height)
+        self.buffer = [float_info.max] * (width * height)
 
     def depth_test(self, x, y, depth):
         assert x < self.width and y < self.height
         idx = y * self.width + x
         src = self.buffer[idx]
-        if depth > src:
+        if depth <= src:
             self.buffer[idx] = depth
             return True
         else:
