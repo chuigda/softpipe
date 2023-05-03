@@ -140,6 +140,8 @@ class Vec:
         return Vec(self._x, self._y, self._z if self._z else 0.0, value)
 
     def set_4d_to_1(self):
+        assert self._z is not None
+
         coeff = self._t
         return Vec(self._x / coeff, self._y / coeff, self._z / coeff, 1.0)
 
