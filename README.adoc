@@ -1,0 +1,18 @@
+= softpipe
+author: chuigda<icey@icey.tech>
+
+A very simple, proof of concept software rasterizer.
+
+== ⚠️⚠️⚠️WARNING⚠️⚠️⚠️
+This piece of code is just a proof-of-concept, showing how rasterization-based rendering works.
+The code quality (especially the MATLAB part) is not very good, and both versions are very slow
+(takes >1 seconds to render a 600 * 600 triangle, thus 180,000 pixels). For production purpose
+you may want `llvmpipe` things instead.
+
+== Overall workflow
+* Run vertex shader on all input vertices
+* Set the 4th dimension of all output `v_position`s to 1
+* For each 3 vertex outputs, scan through the rectangle containing this triangle
+** Interpolate outputs with barycentric coordinate
+** Do depth test
+** Run fragment shader on interpolated output, get the final fragment color
