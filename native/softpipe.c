@@ -326,7 +326,7 @@ void spRender(Softpipe *sp,
 
                 size_t linearCoord = yPix * framebuffer->width + xPix;
                 if (sp->depthTest) {
-                    if (vi.z < depthbuffer->depthBuffer[linearCoord]) {
+                    if (vi.z > depthbuffer->depthBuffer[linearCoord]) {
                         continue;
                     }
                     depthbuffer->depthBuffer[linearCoord] = vi.z;

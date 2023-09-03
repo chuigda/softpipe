@@ -72,7 +72,7 @@ typedef SoftpipeColor (*SoftpipeFragmentShader)(
 
 typedef void (*SoftpipeInterpolator)(void *interpolated,
                                      SoftpipeCoordinate *vertices,
-                                     SP_CONST void** vsOutput,
+                                     void SP_CONST* SP_CONST* vsOutput,
                                      float *w);
 
 typedef SoftpipeColor (*SoftpipeBlendFunc)(
