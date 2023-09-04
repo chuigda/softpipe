@@ -10,7 +10,7 @@ extern "C" {
 
 typedef struct stSPUTWindow SPUTWindow;
 
-SPUTWindow *sputCreateWindow(const char *title,
+SPUTWindow *sputCreateWindow(SP_CONST char *title,
                              size_t width,
                              size_t height);
 bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb);

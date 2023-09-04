@@ -41,7 +41,7 @@ static BOOL initWndClass(void) {
     return TRUE;
 }
 
-SPUTWindow *sputCreateWindow(const char *title,
+SPUTWindow *sputCreateWindow(SP_CONST char *title,
                              size_t width,
                              size_t height) {
     if (!initWndClass()) {
@@ -170,11 +170,22 @@ static LRESULT CALLBACK WndProc(HWND hWnd,
         GetClientRect(hWnd, &rect);
 
         HDC hMemDC = CreateCompatibleDC(hdc);
-        HBITMAP hOldBitmap = (HBITMAP)SelectObject(hMemDC, window->hBitmap);
+        HBITMAP hOldBitmap =
+            (HBITMAP)SelectObject(hMemDC, window->hBitmap);
 
         FillRect(hMemDC, &rect, window->hBrush);
 
-        BitBlt(hdc, 0, 0, rect.right, rect.bottom, hMemDC, 0, 0, SRCCOPY);
+        BitBlt(
+            hdc,
+            0,
+            0,
+            rect.right,
+            rect.bottom,
+            hMemDC,
+            0,
+            0,
+            SRCCOPY
+        );
 
         SelectObject(hMemDC, hOldBitmap);
         DeleteDC(hMemDC);
