@@ -16,6 +16,14 @@ extern "C" {
 #endif
 
 typedef struct {
+    float x, y, z, t;
+} SoftpipeCoordinate;
+
+typedef struct {
+    float r, g, b, a;
+} SoftpipeColor;
+
+typedef struct {
     void *(*alloc)(size_t size, size_t alignment);
     void (*free)(void *ptr);
 } SoftpipeAllocator;
@@ -26,6 +34,16 @@ SoftpipeFramebuffer *spCreateFramebuffer(size_t width,
                                          size_t height,
                                          SoftpipeAllocator *allocator);
 
+void spClearFramebuffer(SoftpipeFramebuffer *fb, SoftpipeColor color);
+
+void spGetFramebufferSize(SoftpipeFramebuffer *fb,
+                          size_t *width,
+                          size_t *height);
+
+void spReadPixel(SoftpipeFramebuffer *fb, float *buffer);
+
+SoftpipeColor spTexture(SoftpipeFramebuffer *fb, float u, float v);
+
 void spDeleteFramebuffer(SoftpipeFramebuffer *fb,
                          SoftpipeAllocator *allocator);
 
@@ -34,6 +52,8 @@ typedef struct stDepthbuffer SoftpipeDepthbuffer;
 SoftpipeDepthbuffer *spCreateDepthBuffer(size_t width,
                                          size_t height,
                                          SoftpipeAllocator *allocator);
+
+void spClearDepthBuffer(SoftpipeDepthbuffer *db);
 
 void spDeleteDepthBuffer(SoftpipeDepthbuffer *db,
                          SoftpipeAllocator *allocator);
@@ -51,29 +71,22 @@ typedef struct {
     bool isFrontFacing;
 } SoftpipeFragmentShaderGlobals;
 
-typedef struct {
-    float x, y, z, t;
-} SoftpipeCoordinate;
-
 typedef SoftpipeCoordinate (*SoftpipeVertexShader)(
-    void *vertexShaderInputBlock,
-    void *vertexShaderOutputBlock,
+    void *veretxShaderOutput,
+    SP_CONST void *vertex,
     SP_CONST void *uniformBlock,
     SP_CONST SoftpipeVertexShaderGlobals *globals);
 
-typedef struct {
-    float r, g, b, a;
-} SoftpipeColor;
-
 typedef SoftpipeColor (*SoftpipeFragmentShader)(
-    void *fragmentShaderInputBlock,
+    SP_CONST void *fragmentShaderInput,
     SP_CONST void *uniformBlock,
     SP_CONST SoftpipeFragmentShaderGlobals *globals);
 
-typedef void (*SoftpipeInterpolator)(void *interpolated,
-                                     SoftpipeCoordinate *vertices,
-                                     void SP_CONST* SP_CONST* vsOutput,
-                                     float *w);
+typedef void (*SoftpipeInterpolator)(
+    void *interpolated,
+    SoftpipeCoordinate (*SP_CONST vertices)[3],
+    void* (*SP_CONST vsOutput)[3],
+    float w[3]);
 
 typedef SoftpipeColor (*SoftpipeBlendFunc)(
     SoftpipeColor src,

@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 static void* defaultAlloc(size_t size, size_t alignment) {
     (void)alignment;
@@ -31,7 +32,8 @@ SoftpipeFramebuffer *spCreateFramebuffer(size_t width,
     }
 
     SoftpipeFramebuffer *fb = allocator->alloc(
-        sizeof(SoftpipeFramebuffer) + width * height * 4, 1
+        sizeof(SoftpipeFramebuffer) + width * height * 4 * sizeof(float),
+        8
     );
     if (!fb) {
         return NULL;
@@ -39,8 +41,56 @@ SoftpipeFramebuffer *spCreateFramebuffer(size_t width,
 
     fb->width = width;
     fb->height = height;
-    memset(fb->colorBuffer, 0, width * height * 4);
+    memset(fb->colorBuffer, 0, width * height * 4 * sizeof(float));
     return fb;
+}
+
+void spClearFramebuffer(SoftpipeFramebuffer *fb, SoftpipeColor color) {
+    size_t size = fb->width * fb->height * 4;
+    for (size_t i = 0; i < size; i += 4) {
+        fb->colorBuffer[i + 0] = color.r;
+        fb->colorBuffer[i + 1] = color.g;
+        fb->colorBuffer[i + 2] = color.b;
+        fb->colorBuffer[i + 3] = color.a;
+    }
+}
+
+void spGetFramebufferSize(SoftpipeFramebuffer *fb,
+                          size_t *width,
+                          size_t *height) {
+    *width = fb->width;
+    *height = fb->height;
+}
+
+void spReadPixel(SoftpipeFramebuffer *fb, float *buffer) {
+    memmove(
+        buffer,
+        fb->colorBuffer, fb->width * fb->height * 4 * sizeof(float)
+    );
+}
+
+SoftpipeColor spTexture(SoftpipeFramebuffer *fb, float u, float v) {
+    if (fb->width == 0 || fb->height == 0) {
+        return (SoftpipeColor) { 0.0f, 0.0f, 0.0f, 0.0f };
+    }
+
+    size_t x = (size_t)roundf(u * fb->width);
+    size_t y = (size_t)roundf(v * fb->height);
+
+    if (x >= fb->width) {
+        x = fb->width - 1;
+    }
+    if (y >= fb->height) {
+        y = fb->height - 1;
+    }
+
+    size_t linearCoord = y * fb->width + x;
+    return (SoftpipeColor) {
+        fb->colorBuffer[linearCoord * 4 + 0],
+        fb->colorBuffer[linearCoord * 4 + 1],
+        fb->colorBuffer[linearCoord * 4 + 2],
+        fb->colorBuffer[linearCoord * 4 + 3]
+    };
 }
 
 void spDeleteFramebuffer(SoftpipeFramebuffer *fb,
@@ -66,7 +116,8 @@ SoftpipeDepthbuffer *spCreateDepthbuffer(size_t width,
     }
 
     SoftpipeDepthbuffer *db = allocator->alloc(
-        sizeof(SoftpipeDepthbuffer) + width * height * sizeof(float), 1
+        sizeof(SoftpipeDepthbuffer) + width * height * sizeof(float),
+        8
     );
     if (!db) {
         return NULL;
@@ -334,8 +385,8 @@ void spRender(Softpipe *sp,
 
                 sp->interpolator(
                     sp->vsOutputInterpolated,
-                    v,
-                    sp->vsOutput,
+                    &v,
+                    &sp->vsOutput,
                     w
                 );
 
