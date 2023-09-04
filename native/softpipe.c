@@ -22,7 +22,7 @@ static SoftpipeAllocator g_DefaultAllocator = (SoftpipeAllocator) {
 struct stFramebuffer {
     size_t width;
     size_t height;
-    uint8_t colorBuffer[0];
+    float colorBuffer[0];
 };
 
 SoftpipeFramebuffer *spCreateFramebuffer(size_t width,
@@ -63,11 +63,28 @@ void spGetFramebufferSize(SoftpipeFramebuffer *fb,
     *height = fb->height;
 }
 
-void spReadPixel(SoftpipeFramebuffer *fb, float *buffer) {
-    memmove(
-        buffer,
-        fb->colorBuffer, fb->width * fb->height * 4 * sizeof(float)
-    );
+void spReadPixelRGBA32(SoftpipeFramebuffer *fb, uint8_t *buffer) {
+    for (size_t i = 0; i < fb->width * fb->height; i++) {
+        buffer[i * 4 + 0] =
+            (uint8_t)(fb->colorBuffer[i * 4 + 0] * 255.0f);
+        buffer[i * 4 + 1] =
+            (uint8_t)(fb->colorBuffer[i * 4 + 1] * 255.0f);
+        buffer[i * 4 + 2] =
+            (uint8_t)(fb->colorBuffer[i * 4 + 2] * 255.0f);
+        buffer[i * 4 + 3] =
+            (uint8_t)(fb->colorBuffer[i * 4 + 3] * 255.0f);
+    }
+}
+
+void spReadPixelRGB24(SoftpipeFramebuffer *fb, uint8_t *buffer) {
+    for (size_t i = 0; i < fb->width * fb->height; i++) {
+        buffer[i * 3 + 0] =
+            (uint8_t)(fb->colorBuffer[i * 4 + 0] * 255.0f);
+        buffer[i * 3 + 1] =
+            (uint8_t)(fb->colorBuffer[i * 4 + 1] * 255.0f);
+        buffer[i * 3 + 2] =
+            (uint8_t)(fb->colorBuffer[i * 4 + 2] * 255.0f);
+    }
 }
 
 SoftpipeColor spTexture(SoftpipeFramebuffer *fb, float u, float v) {
@@ -402,14 +419,10 @@ void spRender(Softpipe *sp,
                     color = sp->blendFunc(oldColor, color);
                 }
 
-                framebuffer->colorBuffer[linearCoord * 4 + 0] =
-                    fmax(fmin(color.r, 0.0), 1.0);
-                framebuffer->colorBuffer[linearCoord * 4 + 1] =
-                    fmax(fmin(color.g, 0.0), 1.0);
-                framebuffer->colorBuffer[linearCoord * 4 + 2] =
-                    fmax(fmin(color.b, 0.0), 1.0);
-                framebuffer->colorBuffer[linearCoord * 4 + 3] =
-                    fmax(fmin(color.a, 0.0), 1.0);
+                framebuffer->colorBuffer[linearCoord * 4 + 0] = color.r;
+                framebuffer->colorBuffer[linearCoord * 4 + 1] = color.g;
+                framebuffer->colorBuffer[linearCoord * 4 + 2] = color.b;
+                framebuffer->colorBuffer[linearCoord * 4 + 3] = color.a;
             }
         }
     }

@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include <stdio.h>
 #include "softpipe.h"
-#include "sput.h"
+#include "sputnik.h"
 
 typedef struct {
     float x, y;
@@ -86,9 +86,25 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
     spRender(softpipe, fb, NULL, vertices, 3, NULL, 0);
 
-    SPUTWindow *window = sputCreateWindow("Softpipe", 640, 480);
-    sputWindowDisplay(window, fb);
+    SPUTWindow *window = sputCreateWindow("SPUT Window", 640, 480);
+    if (!window) {
+        spDeleteSoftpipe(softpipe, NULL);
+        spDeleteFramebuffer(fb, NULL);
+        return 1;
+    }
+
+    if (!sputWindowDisplay(window, fb)) {
+        sputDestroyWindow(window);
+        spDeleteSoftpipe(softpipe, NULL);
+        spDeleteFramebuffer(fb, NULL);
+        return 1;
+    }
 
     sputWindowMainLoop(window);
+
     sputDestroyWindow(window);
+    spDeleteSoftpipe(softpipe, NULL);
+    spDeleteFramebuffer(fb, NULL);
+
+    return 0;
 }

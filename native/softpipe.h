@@ -40,7 +40,8 @@ void spGetFramebufferSize(SoftpipeFramebuffer *fb,
                           size_t *width,
                           size_t *height);
 
-void spReadPixel(SoftpipeFramebuffer *fb, float *buffer);
+void spReadPixelRGBA32(SoftpipeFramebuffer *fb, uint8_t *buffer);
+void spReadPixelRGB24(SoftpipeFramebuffer *fb, uint8_t *buffer);
 
 SoftpipeColor spTexture(SoftpipeFramebuffer *fb, float u, float v);
 

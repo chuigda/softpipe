@@ -1,4 +1,4 @@
-#include "sput.h"
+#include "sputnik.h"
 
 #include <Windows.h>
 #include <stdlib.h>
@@ -86,27 +86,25 @@ bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
     size_t fbWidth, fbHeight;
     spGetFramebufferSize(fb, &fbWidth, &fbHeight);
 
-    float *pixels = malloc(fbWidth * fbHeight * 4 * sizeof(float));
+    uint8_t *pixels =
+        malloc(fbWidth * fbHeight * 4 * sizeof(uint8_t));
     if (!pixels) {
         return false;
     }
-    spReadPixel(fb, pixels);
+    spReadPixelRGBA32(fb, pixels);
 
-    uint8_t *pixels_u8 =
-        malloc(fbWidth * fbHeight * 4 * sizeof(uint8_t));
-    if (!pixels_u8) {
-        free(pixels);
-        return false;
+    for (size_t y = 0; y < fbHeight / 2; y++) {
+        for (size_t x = 0; x < fbWidth * 4; x++) {
+            uint8_t tmp = pixels[y * fbWidth * 4 + x];
+            pixels[y * fbWidth * 4 + x] =
+                pixels[(fbHeight - y - 1) * fbWidth * 4 + x];
+            pixels[(fbHeight - y - 1) * fbWidth * 4 + x] = tmp;
+        }
     }
 
-    for (size_t i = 0; i < fbWidth * fbHeight * 4; i++) {
-        pixels_u8[i] = (uint8_t)(pixels[i] * 255.0f);
-    }
-
-    HBITMAP hBitmap = CreateBitmap(fbWidth, fbHeight, 1, 32, pixels_u8);
+    HBITMAP hBitmap = CreateBitmap(fbWidth, fbHeight, 1, 32, pixels);
     if (!hBitmap) {
         free(pixels);
-        free(pixels_u8);
         return false;
     }
 
@@ -114,7 +112,6 @@ bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
     if (!hBrush) {
         DeleteObject(hBitmap);
         free(pixels);
-        free(pixels_u8);
         return false;
     }
 
@@ -127,6 +124,7 @@ bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
 
     window->hBitmap = hBitmap;
     window->hBrush = hBrush;
+    free(pixels);
     return true;
 }
 
