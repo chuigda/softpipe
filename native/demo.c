@@ -1,7 +1,10 @@
-#include <Windows.h>
 #include <stdio.h>
 #include "softpipe.h"
 #include "sputnik.h"
+
+#ifdef WIN32
+#include <Windows.h>
+#endif
 
 typedef struct {
     float x, y;
@@ -52,10 +55,14 @@ static void interpolate(void *interpolated,
     }
 }
 
+#ifdef WIN32
 int WINAPI WinMain(HINSTANCE hInstance,
                    HINSTANCE hPrevInstance,
                    LPSTR lpszCmdLine,
                    int nCmdShow)
+#else
+int main(void)
+#endif
 {
     SoftpipeFramebuffer *fb = spCreateFramebuffer(640, 480, NULL);
     if (!fb) {
