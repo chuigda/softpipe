@@ -38,6 +38,8 @@ static BOOL initWndClass(void) {
             return FALSE;
         }
 
+        SetProcessDPIAware();
+
         g_wndClassInitialised = TRUE;
     }
 
