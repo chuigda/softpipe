@@ -87,6 +87,16 @@ void spReadPixelRGB24(SoftpipeFramebuffer *fb, uint8_t *buffer) {
     }
 }
 
+void spReadPixelRGB332(SoftpipeFramebuffer *fb, uint8_t *buffer) {
+    for (size_t i = 0; i < fb->width * fb->height; i++) {
+        uint8_t r = (uint8_t)(fb->colorBuffer[i * 4 + 0] * 7.0f);
+        uint8_t g = (uint8_t)(fb->colorBuffer[i * 4 + 1] * 7.0f);
+        uint8_t b = (uint8_t)(fb->colorBuffer[i * 4 + 2] * 3.0f);
+
+        buffer[i] = (r << 5) | (g << 2) | b;
+    }
+}
+
 SoftpipeColor spTexture(SoftpipeFramebuffer *fb, float u, float v) {
     if (fb->width == 0 || fb->height == 0) {
         return (SoftpipeColor) { 0.0f, 0.0f, 0.0f, 0.0f };
