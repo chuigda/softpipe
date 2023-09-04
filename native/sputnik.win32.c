@@ -7,6 +7,9 @@ struct stSPUTWindow {
     HWND hWnd;
     HBITMAP hBitmap;
     HBRUSH hBrush;
+
+    size_t fbWidth;
+    size_t fbHeight;
 };
 
 static LPCWSTR g_lpszClassName = L"SPUTWindow";
@@ -124,6 +127,8 @@ bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
 
     window->hBitmap = hBitmap;
     window->hBrush = hBrush;
+    window->fbWidth = fbWidth;
+    window->fbHeight = fbHeight;
     free(pixels);
     return true;
 }
@@ -175,7 +180,7 @@ static LRESULT CALLBACK WndProc(HWND hWnd,
 
         FillRect(hMemDC, &rect, window->hBrush);
 
-        BitBlt(
+        StretchBlt(
             hdc,
             0,
             0,
@@ -184,6 +189,8 @@ static LRESULT CALLBACK WndProc(HWND hWnd,
             hMemDC,
             0,
             0,
+            window->fbWidth,
+            window->fbHeight,
             SRCCOPY
         );
 

@@ -86,9 +86,9 @@ int main(void)
     spDisable(softpipe, SP_DEPTH_TEST);
 
     Vertex vertices[3] = {
-        { 0.0f, 0.5f, 1.0f, 0.0f, 0.0f},
-        {-0.5f, -0.5f, 0.0f, 1.0f, 0.0f},
-        { 0.5f, -0.5f, 0.0f, 0.0f, 1.0f}
+        { 0.0f, 1.0f, 1.0f, 0.0f, 0.0f},
+        {-1.0f, -1.0f, 0.0f, 1.0f, 0.0f},
+        { 1.0f, -1.0f, 0.0f, 0.0f, 1.0f}
     };
 
     spRender(softpipe, fb, NULL, vertices, 3, NULL, 0);
