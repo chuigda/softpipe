@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdio.h>
 
 static void* defaultAlloc(size_t size, size_t alignment) {
     (void)alignment;
@@ -263,36 +264,23 @@ static inline void standardize(SoftpipeCoordinate *v) {
 }
 
 static inline float min3(float f1, float f2, float f3) {
-    float min = f1;
-    if (f2 < min) {
-        min = f2;
-    }
-    if (f3 < min) {
-        min = f3;
-    }
-    return min;
+    return fmin(f1, fmin(f2, f3));
 }
 
 static inline float max3(float f1, float f2, float f3) {
-    float max = f1;
-    if (f2 > max) {
-        max = f2;
-    }
-    if (f3 > max) {
-        max = f3;
-    }
-    return max;
+    return fmax(f1, fmax(f2, f3));
 }
 
-static void barycentric(SoftpipeCoordinate (*v)[3],
-                        float (*w)[3],
+static void barycentric(SoftpipeCoordinate v[3],
+                        float w[3],
                         SoftpipeCoordinate vi) {
-    float denom = (v[1]->y - v[2]->y) * (v[0]->x - v[2]->x) +
-                  (v[2]->x - v[1]->x) * (v[0]->y - v[2]->y);
-    float w1 = ((v[1]->y - v[2]->y) * (vi.x - v[2]->x) +
-                (v[2]->x - v[1]->x) * (vi.y - v[2]->y)) / denom;
-    float w2 = ((v[2]->y - v[0]->y) * (vi.x - v[2]->x) +
-                (v[0]->x - v[2]->x) * (vi.y - v[2]->y)) / denom;
+    float denom = (v[1].y - v[2].y) * (v[0].x - v[2].x) +
+                  (v[2].x - v[1].x) * (v[0].y - v[2].y);
+    w[0] = ((v[1].y - v[2].y) * (vi.x - v[2].x) +
+            (v[2].x - v[1].x) * (vi.y - v[2].y)) / denom;
+    w[1] = ((v[2].y - v[0].y) * (vi.x - v[2].x) +
+            (v[0].x - v[2].x) * (vi.y - v[2].y)) / denom;
+    w[2] = 1.0f - w[0] - w[1];
 }
 
 void spRender(Softpipe *sp,
@@ -324,8 +312,8 @@ void spRender(Softpipe *sp,
 
             vertexShaderGlobals.vertexIndex = i + subIndex;
             v[subIndex] = sp->vertexShader(
-                vertex,
                 vsOutput,
+                vertex,
                 sp->uniformBlock,
                 &vertexShaderGlobals
             );
@@ -337,10 +325,10 @@ void spRender(Softpipe *sp,
         float xMax = max3(v[0].x, v[1].x, v[2].x);
         float yMax = max3(v[0].y, v[1].y, v[2].y);
 
-        xMin = xMin < -1.0 ? -1.0 : xMin;
-        yMin = yMin < -1.0 ? -1.0 : yMin;
-        xMax = xMax > 1.0 ? 1.0 : xMax;
-        yMax = yMax > 1.0 ? 1.0 : yMax;
+        xMin = fmax(xMin, -1.0f);
+        yMin = fmax(yMin, -1.0f);
+        xMax = fmin(xMax, 1.0f);
+        yMax = fmin(yMax, 1.0f);
 
         size_t xMinPix = (xMin + 1.0) * 0.5 * framebuffer->width;
         size_t yMinPix = (yMin + 1.0) * 0.5 * framebuffer->height;
@@ -368,8 +356,8 @@ void spRender(Softpipe *sp,
                 SoftpipeCoordinate vi =
                     (SoftpipeCoordinate) { x, y, 0.0f, 1.0f };
                 float w[3];
-                barycentric(&v, &w, vi);
-                if (w[0] < 0.0f || w[1] < 0.0f || w[2] < 0.0f) {
+                barycentric(v, w, vi);
+                if (w[0] <= 0.0f || w[1] <= 0.0f || w[2] <= 0.0f) {
                     continue;
                 }
 
@@ -385,8 +373,8 @@ void spRender(Softpipe *sp,
 
                 sp->interpolator(
                     sp->vsOutputInterpolated,
-                    &v,
-                    &sp->vsOutput,
+                    v,
+                    sp->vsOutput,
                     w
                 );
 
@@ -414,10 +402,14 @@ void spRender(Softpipe *sp,
                     color = sp->blendFunc(oldColor, color);
                 }
 
-                framebuffer->colorBuffer[linearCoord * 4 + 0] = color.r;
-                framebuffer->colorBuffer[linearCoord * 4 + 1] = color.g;
-                framebuffer->colorBuffer[linearCoord * 4 + 2] = color.b;
-                framebuffer->colorBuffer[linearCoord * 4 + 3] = color.a;
+                framebuffer->colorBuffer[linearCoord * 4 + 0] =
+                    fmax(fmin(color.r, 0.0), 1.0);
+                framebuffer->colorBuffer[linearCoord * 4 + 1] =
+                    fmax(fmin(color.g, 0.0), 1.0);
+                framebuffer->colorBuffer[linearCoord * 4 + 2] =
+                    fmax(fmin(color.b, 0.0), 1.0);
+                framebuffer->colorBuffer[linearCoord * 4 + 3] =
+                    fmax(fmin(color.a, 0.0), 1.0);
             }
         }
     }

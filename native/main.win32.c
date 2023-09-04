@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include <stdio.h>
 #include "softpipe.h"
 #include "sput.h"
 
@@ -23,7 +24,7 @@ static SoftpipeCoordinate vertexShader(
     out->g = v->g;
     out->b = v->b;
 
-    return (SoftpipeCoordinate){v->x, v->y, 0.0f, 1.0f};
+    return (SoftpipeCoordinate) {v->x, v->y, 0.0f, 1.0f};
 }
 
 static SoftpipeColor fragmentShader(
@@ -36,10 +37,14 @@ static SoftpipeColor fragmentShader(
 }
 
 static void interpolate(void *interpolated,
-                        SoftpipeCoordinate (*const vertices)[3],
-                        void* (*const vsOutput)[3],
+                        SoftpipeCoordinate vertices[3],
+                        void* vsOutput[3],
                         float w[3]) {
     VSOutput *out = (VSOutput *)interpolated;
+    out->r = 0.0f;
+    out->g = 0.0f;
+    out->b = 0.0f;
+
     for (size_t i = 0; i < 3; i++) {
         out->r += w[i] * ((VSOutput *)vsOutput[i])->r;
         out->g += w[i] * ((VSOutput *)vsOutput[i])->g;

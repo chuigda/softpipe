@@ -84,8 +84,8 @@ typedef SoftpipeColor (*SoftpipeFragmentShader)(
 
 typedef void (*SoftpipeInterpolator)(
     void *interpolated,
-    SoftpipeCoordinate (*SP_CONST vertices)[3],
-    void* (*SP_CONST vsOutput)[3],
+    SoftpipeCoordinate vertices[3],
+    void* vsOutput[3],
     float w[3]);
 
 typedef SoftpipeColor (*SoftpipeBlendFunc)(
