@@ -21,9 +21,9 @@ static SPUTWindow g_WindowInstance = { 0 };
 SPUTWindow *sputCreateWindow(SP_CONST char *title,
                              size_t width,
                              size_t height) {
-		(void)title;
+    (void)title;
 
-		assert(width == 320);
+    assert(width == 320);
     assert(height == 200);
     assert(!g_WindowInstance.active);
 
@@ -39,7 +39,7 @@ SPUTWindow *sputCreateWindow(SP_CONST char *title,
 }
 
 bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
-		(void)window;
+    (void)window;
 
     size_t fbWidth, fbHeight;
     spGetFramebufferSize(fb, &fbWidth, &fbHeight);
@@ -50,9 +50,9 @@ bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
         return 0;
     }
     uint8_t *videomem = (uint8_t*)(
-				(uintptr_t)__djgpp_conventional_base +
-				(uintptr_t)0xA0000
-		);
+        (uintptr_t)__djgpp_conventional_base +
+        (uintptr_t)0xA0000
+    );
     spReadPixelRGB332(fb, videomem);
     __djgpp_nearptr_disable();
     return 1;
