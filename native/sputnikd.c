@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <sys/nearptr.h>
 #include <dpmi.h>
@@ -36,8 +37,8 @@ SPUTWindow *sputCreateWindow(SP_CONST char *title,
 bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
     size_t fbWidth, fbHeight;
     spGetFramebufferSize(fb, &fbWidth, &fbHeight);
-    assert(width == 320);
-    assert(height == 200);
+    assert(fbWidth == 320);
+    assert(fbHeight == 200);
 
     if (__djgpp_nearptr_enable() == 0) {
         return 0;
@@ -63,6 +64,8 @@ void sputDestroyWindow(SPUTWindow *window) {
     memset(&regs, 0, sizeof(regs));
     regs.x.ax = 0x10;
     __dpmi_int(0x10, &regs);
+
+    system("mode 80:28");
 }
 
 static inline void setupVGAPalette(void) {
@@ -84,3 +87,4 @@ static inline void setupVGAPalette(void) {
 
     initialised = 1;
 }
+
