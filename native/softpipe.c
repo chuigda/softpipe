@@ -90,6 +90,20 @@ void spReadPixelRGBA32(SoftpipeFramebuffer *fb, uint8_t *buffer) {
     }
 }
 
+void spReadPixelBGRA32(SoftpipeFramebuffer *fb, uint8_t *buffer) {
+    for (size_t y = 0; y < fb->height; y++) {
+        for (size_t x = 0; x < fb->width; x++) {
+            size_t fb_addr = (y * fb->width + x) * 4;
+            size_t buf_addr = ((fb->height - y - 1) * fb->width + x) * 4;
+
+            buffer[buf_addr] = fb->colorBuffer[fb_addr + 2] * 255.0f;
+            buffer[buf_addr + 1] = fb->colorBuffer[fb_addr + 1] * 255.0f;
+            buffer[buf_addr + 2] = fb->colorBuffer[fb_addr] * 255.0f;
+            buffer[buf_addr + 3] = fb->colorBuffer[fb_addr + 3] * 255.0f;
+        }
+    }
+}
+
 void spReadPixelRGB24(SoftpipeFramebuffer *fb, uint8_t *buffer) {
     for (size_t y = 0; y < fb->height; y++) {
         for (size_t x = 0; x < fb->width; x++) {

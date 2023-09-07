@@ -96,7 +96,7 @@ bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
     if (!pixels) {
         return false;
     }
-    spReadPixelRGBA32(fb, pixels);
+    spReadPixelBGRA32(fb, pixels);
 
     HBITMAP hBitmap = CreateBitmap(fbWidth, fbHeight, 1, 32, pixels);
     if (!hBitmap) {
