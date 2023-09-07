@@ -1,5 +1,7 @@
 #include "softpipe.h"
+
 #include <assert.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -194,10 +196,10 @@ struct stSoftpipe {
     SoftpipeInterpolator interpolator;
     SoftpipeBlendFunc blendFunc;
 
-    _Bool cullFace;
-    _Bool depthTest;
-    _Bool alphaTest;
-    _Bool blending;
+    bool cullFace;
+    bool depthTest;
+    bool alphaTest;
+    bool blending;
 
     SP_CONST void *uniformBlock;
     void *vsOutput[3];

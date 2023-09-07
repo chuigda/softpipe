@@ -1,6 +1,7 @@
 #include "sputnik.h"
 
 #include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +13,7 @@
 static inline void setupVGAPalette(void);
 
 struct stSPUTWindow {
-    _Bool active;
+    bool active;
 };
 
 static SPUTWindow g_WindowInstance = { 0 };
@@ -49,7 +50,7 @@ bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
         return 0;
     }
     uint8_t *videomem = (uint8_t*)(
-				(uintptr_t)__djgpp_conventional_base + 
+				(uintptr_t)__djgpp_conventional_base +
 				(uintptr_t)0xA0000
 		);
     spReadPixelRGB332(fb, videomem);
@@ -77,7 +78,7 @@ void sputDestroyWindow(SPUTWindow *window) {
 }
 
 static inline void setupVGAPalette(void) {
-    static _Bool initialised = 0;
+    static bool initialised = 0;
     if (initialised) {
         return;
     }
