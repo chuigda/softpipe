@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <sys/nearptr.h>
 #include <dpmi.h>
@@ -14,12 +15,14 @@ struct stSPUTWindow {
     _Bool active;
 };
 
-static SPUTWindow g_WindowInstance { 0 };
+static SPUTWindow g_WindowInstance = { 0 };
 
 SPUTWindow *sputCreateWindow(SP_CONST char *title,
                              size_t width,
                              size_t height) {
-    assert(width == 320);
+		(void)title;
+
+		assert(width == 320);
     assert(height == 200);
     assert(!g_WindowInstance.active);
 
@@ -35,6 +38,8 @@ SPUTWindow *sputCreateWindow(SP_CONST char *title,
 }
 
 bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
+		(void)window;
+
     size_t fbWidth, fbHeight;
     spGetFramebufferSize(fb, &fbWidth, &fbHeight);
     assert(fbWidth == 320);
@@ -43,7 +48,10 @@ bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
     if (__djgpp_nearptr_enable() == 0) {
         return 0;
     }
-    uint8_t *videomem = __djgpp_conventional_base + 0xA0000;
+    uint8_t *videomem = (uint8_t*)(
+				(uintptr_t)__djgpp_conventional_base + 
+				(uintptr_t)0xA0000
+		);
     spReadPixelRGB332(fb, videomem);
     __djgpp_nearptr_disable();
     return 1;
@@ -76,15 +84,14 @@ static inline void setupVGAPalette(void) {
 
     outportb(0x3C8, 0);
     for (size_t i = 0; i <= 255; i++) {
-        size_t r = i >> 5;
+        size_t r = (i >> 5) & 0x7;
         size_t g = (i >> 2) & 0x7;
         size_t b = i & 0x3;
 
         outportb(0x3C9, r * 9);
         outportb(0x3C9, g * 9);
-        outportb(0x3C9, b * 27);
+        outportb(0x3C9, b * 21);
     }
 
     initialised = 1;
 }
-

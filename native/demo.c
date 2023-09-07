@@ -21,6 +21,9 @@ static SoftpipeCoordinate vertexShader(
     const void *uniformBlock,
     const SoftpipeVertexShaderGlobals *globals
 ) {
+    (void)uniformBlock;
+    (void)globals;
+
     const Vertex *v = (const Vertex *)vertex;
     VSOutput *out = (VSOutput *)vertexShaderOutput;
     out->r = v->r;
@@ -35,6 +38,9 @@ static SoftpipeColor fragmentShader(
     const void *uniformBlock,
     const SoftpipeFragmentShaderGlobals *globals
 ) {
+    (void)uniformBlock;
+    (void)globals;
+
     const VSOutput *in = (const VSOutput *)fragmentShaderInput;
     return (SoftpipeColor){in->r, in->g, in->b, 1.0f};
 }
@@ -43,6 +49,8 @@ static void interpolate(void *interpolated,
                         SoftpipeCoordinate vertices[3],
                         void* vsOutput[3],
                         float w[3]) {
+    (void)vertices;
+
     VSOutput *out = (VSOutput *)interpolated;
     out->r = 0.0f;
     out->g = 0.0f;
@@ -115,4 +123,3 @@ int main(void)
 
     return 0;
 }
-

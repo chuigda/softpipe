@@ -107,9 +107,9 @@ void spReadPixelRGB332(SoftpipeFramebuffer *fb, uint8_t *buffer) {
             size_t fb_addr = (y * fb->width + x) * 4;
             size_t buf_addr = (fb->height - y - 1) * fb->width + x;
 
-            uint8_t r = fb->colorBuffer[fb_addr] * 7.0f;
-            uint8_t g = fb->colorBuffer[fb_addr + 1] * 7.0f;
-            uint8_t b = fb->colorBuffer[fb_addr + 2] * 3.0f;
+            uint8_t r = round(fb->colorBuffer[fb_addr] * 7.0f);
+            uint8_t g = round(fb->colorBuffer[fb_addr + 1] * 7.0f);
+            uint8_t b = round(fb->colorBuffer[fb_addr + 2] * 3.0f);
 
             buffer[buf_addr] = (r << 5) | (g << 2) | b;
         }
@@ -381,8 +381,8 @@ void spRender(Softpipe *sp,
         size_t xMaxPix = (xMax + 1.0) * 0.5 * framebuffer->width;
         size_t yMaxPix = (yMax + 1.0) * 0.5 * framebuffer->height;
 
-        if (xMinPix > framebuffer->width || xMaxPix < 0 ||
-            yMinPix > framebuffer->height || yMaxPix < 0) {
+        if (xMinPix > framebuffer->width ||
+            yMinPix > framebuffer->height) {
             continue;
         }
 
