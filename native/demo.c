@@ -64,7 +64,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 int main(void)
 #endif
 {
-    SoftpipeFramebuffer *fb = spCreateFramebuffer(640, 480, NULL);
+    SoftpipeFramebuffer *fb = spCreateFramebuffer(320, 200, NULL);
     if (!fb) {
         return 1;
     }
@@ -93,7 +93,7 @@ int main(void)
 
     spRender(softpipe, fb, NULL, vertices, 3, NULL, 0);
 
-    SPUTWindow *window = sputCreateWindow("SPUT Window", 640, 480);
+    SPUTWindow *window = sputCreateWindow("SPUT Window", 320, 200);
     if (!window) {
         spDeleteSoftpipe(softpipe, NULL);
         spDeleteFramebuffer(fb, NULL);
@@ -115,3 +115,4 @@ int main(void)
 
     return 0;
 }
+

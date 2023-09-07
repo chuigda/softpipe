@@ -5,6 +5,17 @@
 #include <math.h>
 #include <stdio.h>
 
+#ifdef MAX
+#undef MAX
+#endif
+
+#ifdef MIN
+#undef MIN
+#endif
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
 static void* defaultAlloc(size_t size, size_t alignment) {
     (void)alignment;
     return malloc(size);
@@ -64,36 +75,44 @@ void spGetFramebufferSize(SoftpipeFramebuffer *fb,
 }
 
 void spReadPixelRGBA32(SoftpipeFramebuffer *fb, uint8_t *buffer) {
-    for (size_t i = 0; i < fb->width * fb->height; i++) {
-        buffer[i * 4 + 0] =
-            (uint8_t)(fb->colorBuffer[i * 4 + 0] * 255.0f);
-        buffer[i * 4 + 1] =
-            (uint8_t)(fb->colorBuffer[i * 4 + 1] * 255.0f);
-        buffer[i * 4 + 2] =
-            (uint8_t)(fb->colorBuffer[i * 4 + 2] * 255.0f);
-        buffer[i * 4 + 3] =
-            (uint8_t)(fb->colorBuffer[i * 4 + 3] * 255.0f);
+    for (size_t y = 0; y < fb->height; y++) {
+        for (size_t x = 0; x < fb->width; x++) {
+            size_t fb_addr = (y * fb->width + x) * 4;
+            size_t buf_addr = ((fb->height - y - 1) * fb->width + x) * 4;
+
+            buffer[buf_addr] = fb->colorBuffer[fb_addr] * 255.0f;
+            buffer[buf_addr + 1] = fb->colorBuffer[fb_addr + 1] * 255.0f;
+            buffer[buf_addr + 2] = fb->colorBuffer[fb_addr + 2] * 255.0f;
+            buffer[buf_addr + 3] = fb->colorBuffer[fb_addr + 3] * 255.0f;
+        }
     }
 }
 
 void spReadPixelRGB24(SoftpipeFramebuffer *fb, uint8_t *buffer) {
-    for (size_t i = 0; i < fb->width * fb->height; i++) {
-        buffer[i * 3 + 0] =
-            (uint8_t)(fb->colorBuffer[i * 4 + 0] * 255.0f);
-        buffer[i * 3 + 1] =
-            (uint8_t)(fb->colorBuffer[i * 4 + 1] * 255.0f);
-        buffer[i * 3 + 2] =
-            (uint8_t)(fb->colorBuffer[i * 4 + 2] * 255.0f);
+    for (size_t y = 0; y < fb->height; y++) {
+        for (size_t x = 0; x < fb->width; x++) {
+            size_t fb_addr = (y * fb->width + x) * 4;
+            size_t buf_addr = ((fb->height - y - 1) * fb->width + x) * 3;
+
+            buffer[buf_addr] = fb->colorBuffer[fb_addr] * 255.0f;
+            buffer[buf_addr + 1] = fb->colorBuffer[fb_addr + 1] * 255.0f;
+            buffer[buf_addr + 2] = fb->colorBuffer[fb_addr + 2] * 255.0f;
+        }
     }
 }
 
 void spReadPixelRGB332(SoftpipeFramebuffer *fb, uint8_t *buffer) {
-    for (size_t i = 0; i < fb->width * fb->height; i++) {
-        uint8_t r = (uint8_t)(fb->colorBuffer[i * 4 + 0] * 7.0f);
-        uint8_t g = (uint8_t)(fb->colorBuffer[i * 4 + 1] * 7.0f);
-        uint8_t b = (uint8_t)(fb->colorBuffer[i * 4 + 2] * 3.0f);
+    for (size_t y = 0; y < fb->height; y++) {
+        for (size_t x = 0; x < fb->width; x++) {
+            size_t fb_addr = (y * fb->width + x) * 4;
+            size_t buf_addr = (fb->height - y - 1) * fb->width + x;
 
-        buffer[i] = (r << 5) | (g << 2) | b;
+            uint8_t r = fb->colorBuffer[fb_addr] * 7.0f;
+            uint8_t g = fb->colorBuffer[fb_addr + 1] * 7.0f;
+            uint8_t b = fb->colorBuffer[fb_addr + 2] * 3.0f;
+
+            buffer[buf_addr] = (r << 5) | (g << 2) | b;
+        }
     }
 }
 
@@ -291,11 +310,11 @@ static inline void standardize(SoftpipeCoordinate *v) {
 }
 
 static inline float min3(float f1, float f2, float f3) {
-    return fmin(f1, fmin(f2, f3));
+    return MIN(f1, MIN(f2, f3));
 }
 
 static inline float max3(float f1, float f2, float f3) {
-    return fmax(f1, fmax(f2, f3));
+    return MAX(f1, MAX(f2, f3));
 }
 
 static void barycentric(SoftpipeCoordinate v[3],
@@ -352,10 +371,10 @@ void spRender(Softpipe *sp,
         float xMax = max3(v[0].x, v[1].x, v[2].x);
         float yMax = max3(v[0].y, v[1].y, v[2].y);
 
-        xMin = fmax(xMin, -1.0f);
-        yMin = fmax(yMin, -1.0f);
-        xMax = fmin(xMax, 1.0f);
-        yMax = fmin(yMax, 1.0f);
+        xMin = MAX(xMin, -1.0f);
+        yMin = MAX(yMin, -1.0f);
+        xMax = MIN(xMax, 1.0f);
+        yMax = MIN(yMax, 1.0f);
 
         size_t xMinPix = (xMin + 1.0) * 0.5 * framebuffer->width;
         size_t yMinPix = (yMin + 1.0) * 0.5 * framebuffer->height;
@@ -429,10 +448,14 @@ void spRender(Softpipe *sp,
                     color = sp->blendFunc(oldColor, color);
                 }
 
-                framebuffer->colorBuffer[linearCoord * 4 + 0] = color.r;
-                framebuffer->colorBuffer[linearCoord * 4 + 1] = color.g;
-                framebuffer->colorBuffer[linearCoord * 4 + 2] = color.b;
-                framebuffer->colorBuffer[linearCoord * 4 + 3] = color.a;
+                framebuffer->colorBuffer[linearCoord * 4 + 0] =
+                    MIN(1.0, MAX(0.0, color.r));
+                framebuffer->colorBuffer[linearCoord * 4 + 1] =
+                    MIN(1.0, MAX(0.0, color.g));
+                framebuffer->colorBuffer[linearCoord * 4 + 2] =
+                    MIN(1.0, MAX(0.0, color.b));
+                framebuffer->colorBuffer[linearCoord * 4 + 3] =
+                    MIN(1.0, MAX(0.0, color.a));
             }
         }
     }

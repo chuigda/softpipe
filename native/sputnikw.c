@@ -98,15 +98,6 @@ bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
     }
     spReadPixelRGBA32(fb, pixels);
 
-    for (size_t y = 0; y < fbHeight / 2; y++) {
-        for (size_t x = 0; x < fbWidth * 4; x++) {
-            uint8_t tmp = pixels[y * fbWidth * 4 + x];
-            pixels[y * fbWidth * 4 + x] =
-                pixels[(fbHeight - y - 1) * fbWidth * 4 + x];
-            pixels[(fbHeight - y - 1) * fbWidth * 4 + x] = tmp;
-        }
-    }
-
     HBITMAP hBitmap = CreateBitmap(fbWidth, fbHeight, 1, 32, pixels);
     if (!hBitmap) {
         free(pixels);

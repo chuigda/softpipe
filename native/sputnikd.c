@@ -30,7 +30,7 @@ SPUTWindow *sputCreateWindow(SP_CONST char *title,
     setupVGAPalette();
 
     g_WindowInstance.active = true;
-    return g_WindowInstance;
+    return &g_WindowInstance;
 }
 
 bool sputWindowDisplay(SPUTWindow *window, SoftpipeFramebuffer *fb) {
@@ -77,13 +77,9 @@ static inline void setupVGAPalette(void) {
         size_t g = (i >> 2) & 0x7;
         size_t b = i & 0x3;
 
-        float fr = r / 7.0;
-        float fg = g / 7.0;
-        float fb = b / 3.0;
-
-        outportb(0x3C9, (uint8_t)(size_t)(r * 255.0));
-        outportb(0x3C9, (uint8_t)(size_t)(g * 255.0));
-        outportb(0x3C9, (uint8_t)(size_t)(b * 255.0));
+        outportb(0x3C9, r * 9);
+        outportb(0x3C9, g * 9);
+        outportb(0x3C9, b * 27);
     }
 
     initialised = 1;
