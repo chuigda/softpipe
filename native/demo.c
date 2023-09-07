@@ -72,6 +72,13 @@ int WINAPI WinMain(HINSTANCE hInstance,
 int main(void)
 #endif
 {
+#ifdef WIN32
+    (void)hInstance;
+    (void)hPrevInstance;
+    (void)lpszCmdLine;
+    (void)nCmdShow;
+#endif
+
     SoftpipeFramebuffer *fb = spCreateFramebuffer(320, 200, NULL);
     if (!fb) {
         return 1;
