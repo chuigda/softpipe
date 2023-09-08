@@ -33,6 +33,8 @@ SPUTWindow *sputCreateWindow(SP_CONST char *title,
     xcb_screen_t *s = xcb_setup_roots_iterator(xcb_get_setup(c)).data;
 
     xcb_drawable_t win = xcb_generate_id(c);
+    uint32_t mask = XCB_CW_EVENT_MASK;
+    uint32_t mask_values[1] = { XCB_EVENT_MASK_EXPOSURE };
     xcb_create_window(c,
                       XCB_COPY_FROM_PARENT,
                       win,
@@ -42,8 +44,8 @@ SPUTWindow *sputCreateWindow(SP_CONST char *title,
                       0,
                       XCB_WINDOW_CLASS_INPUT_OUTPUT,
                       s->root_visual,
-                      0,
-                      NULL);
+                      mask,
+                      mask_values);
 
     xcb_change_property(c,
                         XCB_PROP_MODE_REPLACE,
