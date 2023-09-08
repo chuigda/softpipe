@@ -4,10 +4,11 @@ author: chuigda<icey@icey.tech>
 A very simple, proof of concept software rasterizer.
 
 == ⚠️⚠️⚠️WARNING⚠️⚠️⚠️
-This piece of code is just a proof-of-concept, showing how rasterization-based rendering works.
+The python and MATLAB code are just a proof-of-concept, showing how rasterization-based rendering works.
 The code quality (especially the MATLAB part) is not very good, and both versions are very slow
-(takes >1 seconds to render a 600 * 600 triangle, thus 180,000 pixels). For production purpose
-you may want `llvmpipe` things instead.
+(takes >1 seconds to render a 600 * 600 triangle, thus 180,000 pixels).
+
+The NATIVE code may be usable, however.
 
 == Overall workflow
 * Run vertex shader on all input vertices
